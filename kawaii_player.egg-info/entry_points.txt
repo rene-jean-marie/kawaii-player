@@ -1,0 +1,5 @@
+[console_scripts]
+kawaii-player-console = kawaii_player.kawaii_player:main
+
+[gui_scripts]
+kawaii-player = kawaii_player.kawaii_player:main

@@ -1,0 +1,290 @@
+<!--"""
+Copyright (C) 2017 kanishka-linux kanishka.linux@gmail.com
+
+This file is part of kawaii-player.
+
+kawaii-player is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+kawaii-player is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with kawaii-player.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
+"""-->
+
+
+
+
+
+
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+
+
+<body>
+<div class= "video_section" id="video_section">
+<div id="title_music" class="title_music">
+    <img id="img-id" src="">
+    <br>
+    <div id="img-info">
+    </div>
+    <br>
+</div>
+<video id="player" width="640" height="480" controls>
+	<track kind="captions" label="English" srclang="en" src="" default>
+</video>
+<br>
+<div id="title" class="title_video"></div>
+<br>
+<div id="buttons_div" class="Buttons">
+<button id="play" onclick="play_on_click()" title="Play/Pause">&#9658;</button>
+<button id="prev" onclick="prev_on_click()" title="Prev"><b>&#60;</b></button>
+<button id="next" onclick="next_on_click()" title="Next"><b>&#62;</b></button>
+<button id="stop" onclick="stop_on_click()" title="Stop">&#9632;</button>
+<div id="remote_control_buttons">
+    <button id="seek_10">10s-</button>
+    <button id="seek10">10s+</button>
+    <button id="seek_60">60s-</button>
+    <button id="seek60">60s+</button>
+    <button id="seek_5m">5m-</button>
+    <button id="seek5m">5m+</button>
+    <button id="vol_5">vol--</button>
+    <button id="vol5">vol++</button>
+    <button id="fullscreen" title="Toggle Fullscreen">F</button>
+    <button id="toggle_audio" title="Toggle Audio" onclick="toggle_audio_player()">Audio</button>
+    <button id="toggle_subtitle" title="Toggle Subtitle" onclick="toggle_subtitle_player()">Sub</button>
+    <button id="prev_chapter" title="Prev Chapter" onclick="goto_previous_chapter()">Chapter-</button>
+    <button id="next_chapter" title="Next Chapter-" onclick="goto_next_chapter()">Chapter+</button>
+    <button id="toggle_fullscreen_window" title="Toggle Fullscreen Window" onclick="toggle_fullscreen_window()">FS</button>
+    <button id="show_stats" title="Video Stats" onclick="show_video_stats()">Stats</button>
+    <div id="aspect_selection" class="select_aspect_ratio">
+    <select id="aspect_ratio" onchange="change_aspect_ratio()">
+        <option value="">Aspect Ratio</option>
+        <option value="btn_aspect_original">Original</option>
+        <option value="btn_aspect_disable">Disable</option>
+        <option value="btn_aspect_4_3">4:3</option>
+        <option value="btn_aspect_16_9">16:9</option>
+        <option value="btn_aspect_235">2.35:1</option>
+    </select>
+    <select id="playback_engine" onchange="change_playback_engine()">
+        <option value="">Engine</option>
+        <option value="libmpv">libmpv</option>
+        <option value="libvlc">libvlc</option>
+    </select>
+    </div>
+    <button id="cast_button" title="Cast" onclick="cast_url()">Cast</button>
+    <button id="apply_label" title="Click to apply selected label" onclick="apply_video_category()">Apply Label</button>
+    <div id="apply_category" class="select_video_category">
+    <select id="video_label">
+        <option value="">Select Label</option>
+    </select>
+    </div>
+    <button id="rename_button" title="Rename Video Playlist Title" onclick="rename_video_title()">Rename Title</button>
+    <button id="poster_button" title="Fetch Poster" onclick="fetch_poster('poster')">Poster</button>
+    <button id="fanart_button" title="Fetch Fanart" onclick="fetch_poster('fanart')">Fanart</button>
+    <button id="show_player" title="Show Player" onclick="show_player_window()">Show</button>
+    <button id="hide_player" title="Hide Player" onclick="hide_player_window()">Hide</button>
+    <button id="toggle_master" title="Toggle Master" onclick="toggle_master_slave()">Master</button>
+    <button id="last_item" onclick="play_last_item_from_playlist()" title="Play last played item from the playlist (only video section)">Last</button>
+</div>
+<button id="loop" onclick="start_loop(0)">Lock</button>
+<button id="shuffle">Shuffle</button>
+<button id="m3u" title="Get Playlist in m3u format" title="Get Playlist in M3U format">M3U</button>
+<button id="remote_btn" title="Turn on/off remote control">R:Off</button>
+<button id="empty_btn" title="Remote control feature is not enabled on server">--</button>
+<button id="last_position" onclick="goto_last_position(event)" title="Go To last clicked position">&#9660;</button>
+<!--<button id="home">Home</button>-->
+<button id="minimal" onclick="hide_alternate_menu_buttons()" title="Show/Hide old legacy Menu. It will be deprecated soon. Users should use top menu bar instead">--</button>
+<button id="custom_pls" title="Manage Playlist and Queues">PL / Q</button>
+<button id="logout">Logout</button>
+<!--
+deprecated these four buttons
+<button id="first_playlist" onclick="get_first_playlist()" title="Navigate to first accessed playlist">First</button>
+<button id="prev_playlist" onclick="get_previous_playlist()" title="Navigate to Previous Playlist">Prev</button>
+<button id="next_playlist" onclick="get_next_playlist()" title="Navigate to Next Playlist">Next</button>
+-->
+<!--&#x1f5d1;wastebasket-->
+</div>
+
+<div id="selection_site" class="site_selection">
+<select id="site" onchange="siteChange()"></select>
+<select id="opt" onchange="optChange()"></select>
+<button id="opt_ok">Go</button>
+<input id="type_search" title="Enter Text to Search. 
+Text box can also be used to input text commands to server as follows 
+1. create_playlist:playlist_name 
+2. save_playlist:playlist_name (will save any current playlist) 
+3. update:video (update video section) 
+4. update:music (update music section) 
+5. sub:on (turn on subtitle, works if ffmpeg is installed on server)
+6. sub:off 
+7. sub:reload 
+8. torrent:torrent_magnet_or_http link (for adding torrent) 
+9. torrent:stop 
+10 torrent:remove (remove torrent from session)
+11. torrent:delete (delete torrent and associated files)
+12. torrent:status 
+13. torrent:status_all (show status of all torrents)
+14. torrent:status_stop 
+15. torrent:d:KB::u:KB  (set d:download, u:upload speed)
+16. torrent:pause 
+17. torrent:pause_all
+18. torrent:resume
+19. torrent:resume_all
+20. yt:youtube_url (add youtube link to playlist) 
+21. yt:audio (play only audio) 
+22. yt:audiovideo (regular video) 
+23. quality:{sd,hd,best} 
+"  type="search" placeholder="Search Text" onkeypress="return searchFunction(event, 0)" hidden="hidden">
+
+<div id="display_option" class="option_display">
+<select id="opt_val" onchange="optValChange()" width="100%" hidden="hidden"></select>
+<button id="opt_val_ok" hidden="hidden">Go</button>
+</div>
+
+</div>
+
+
+
+<div id="pls_custom" class ="pls_custom_" hidden="hidden">
+	<button id="create_playlist" title="click to create custom playlist" onclick="_create_custom_playlist('button')">Create</button>
+	<select id="only_playlist"></select>
+	<button id="sync_button" title="Sync playlist to server" onclick="_sync_pls()">Save</button>
+	<button id="delete_playlist_button" title="Delete selected playlist" onclick="_delete_pls(event)">Delete</button>
+    <button id="clear_pls_button" title="Clear Entries" onclick="_clear_pls_button()">Clear</button>
+    <div id="queue_info" class="queue_info">
+	Click on items to add them to queue. In order to save queued items to playlist, select some existing playlist and press save button. If this list is hidden without clearing it, then the non-empty list will be treated as queue irrespective of the selected playlist. <span id="hide_info" color="white" onclick="hide_extra_info(event)">...Hide</span>
+    </div>
+	<ol id="playlist_custom" class="playlist_custom"></ol>
+</div>
+
+</div>
+<br>
+<div id="site_option" hidden></div>
+<br>
+<div class ="pls">
+<ol id="playlist"></ol>
+</div>
+<!--
+<menu type="context" id ="MyMenu"> 
+	<menu label="Add To Playlist" id ="menu_playlist"> 
+		<menuitem label='hello' onclick="menu_clicked(label)"> </menuitem>
+		<menuitem label='world' onclick="menu_clicked(label)"> </menuitem>
+	</menu>
+    <menuitem label='Queue Item' onclick="menu_clicked_queue(label)"></menuitem>
+	<menuitem label='Add To Current Playlist' onclick="menu_clicked_playlist(label)"></menuitem>
+	<menuitem label='Remove From Playlist' onclick="menu_clicked_remove(label)"></menuitem>
+</menu>
+<div class="toTop">
+<div id="backToTop" ondrop="custom_drop(event)" draggable="true" ondragstart="drag_start(event)" ondragend="drag_end(event)" ondragover="drag_over(event)" ondragleave="drag_leave(event)" ondragenter="drag_enter(event)">Top</div>
+</div>
+-->
+
+<nav id="context-menu-bar" class="context-menu">
+    <ul class="context-menu__items" id="custom_context_menu_playlist">
+      <li class="context-menu__item" onclick="menu_clicked_playnow(event)">
+        Play Now
+      </li>
+      <li class="context-menu__item" onclick="menu_clicked_queue('hide')">
+        Queue Item
+      </li>
+      <li class="context-menu__item" onclick="menu_clicked_add_to_playlist(event)">
+        Add To Playlist
+      </li>
+      <li class="context-menu__item" onclick="menu_clicked_playlist('hide')">
+        Add To Selected Playlist
+      </li>
+      <li class="context-menu__item" onclick="show_thumbnails_image('hide')">
+        Show Thumbnails
+      </li>
+      <li class="context-menu__item" onclick="_create_custom_playlist('hide')">
+        Create New Playlist
+      </li>
+      <li class="context-menu__item" onclick="menu_clicked_remove('hide')">
+        Remove Item From Playlist
+      </li>
+      <li class="context-menu__item" onclick="menu_clicked_hide('hide')">
+        Hide This Menu
+      </li>
+    </ul>
+</nav>
+
+<nav id="context-menu-bar-custom" class="context-menu-bar-custom">
+    <ul class="context-menu__items" id="custom_context_menu_playlist_queue">
+      <li class="context-menu__item" onclick="menu_clicked_playnow_queue(event)">
+        Play Now
+      </li>
+      <li class="context-menu__item" onclick="menu_clicked_remove_queue('hide')">
+        Remove Item From Queue
+      </li>
+      <li class="context-menu__item" onclick="menu_clicked_hide_queue('hide')">
+        Hide This Menu
+      </li>
+    </ul>
+</nav>
+
+
+<nav id="playlist_context_menu" class="playlist_context_menu">
+    <ul id="playlist_context_menu_items" class="playlist_context_menu_items">
+    </ul>
+</nav>
+
+<button class="btn_maximize" id="btn_maximize" onclick="show_control_bar()"></button>
+<button class="btn_to_top" id="btn_to_top" onclick="back_to_top()">&#9650;</button>
+
+<div id="player_control_progress" class="player_control_progress">
+    <div id="player_progress_div" class="player_progress">
+        <div id="player_start_time" class="player_start_time"></div>
+        <progress id="player_progress" value="0" max="100"></progress>
+        <div id="player_end_time" class="player_end_time"></div>
+    </div>
+    <div id="player_control" class="player_control">
+        <div class="player_control_col1" title="click to loop" onclick="start_loop(1)">
+            <img id="player_control_image" src="" height="64">
+        </div>
+        <div class="player_control_col2" onclick="back_to_top()">
+            <p id="player_control_info" class="player_control_info"></p>
+        </div>
+        <div class="player_control_col3">
+            <button title="Next" onclick="next_on_click()"><b>&#62;</b></button>
+            <button title="Prev" onclick="prev_on_click()"><b>&#60;</b></button>
+        
+        </div>
+        <div class="player_control_col4">
+            <button onclick="play_on_click()" title="play/pause">&#9658;</button>
+            <button id="btn_minimize" onclick="hide_control_bar()" title="minimize">--</button>
+        </div>
+        </div>
+    </div>
+</div>
+<div id="top_menu_bar" class="top_menu_bar">
+    <div id="top_menu_bar_sub" class="top_menu_bar_sub">
+    <select id="first_select" onchange="siteChangeTop()"></select>
+    <select id="second_select" onchange="optChangeTop()"></select>
+    <select id="third_select" onchange="optValChangeTop()"></select>
+    <input id="search_text_top" title="Enter Text to Search" type="search" placeholder="Search Box" onkeypress="return searchFunction(event, 1)" list="mydatalist">
+    </div>
+    <button onclick="max_min_top_bar()" title="Show/Hide Top Menu Bar">M</button>
+</div>
+<button class="btn_minmax_topbar" id="btn_minmax_topbar" onclick="hide_show_topbar()">M</button>
+
+<datalist id="mydatalist" class="mydatalist">
+</datalist>
+
+<script type = 'text/javascript' src="myscript.js">
+</script>
+</body>
+</html>

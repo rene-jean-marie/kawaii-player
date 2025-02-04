@@ -492,36 +492,30 @@ class MediaDatabase():
                     if os.path.exists(dirn):
                         self.logger.debug('exists::dirn={0}'.format(dirn))
                         music.append(dirn)
-                        for r, d, f in os.walk(dirn):
-                            for z in d:
-                                if not z.startswith('.'):
+                        try:
+                            for r, d, f in os.walk(dirn, followlinks=False):
+                                # Filter out hidden directories
+                                d[:] = [x for x in d if not x.startswith('.')]
+                                for z in d:
                                     music.append(os.path.join(r, z))
-                                else:
-                                    o.append(os.path.join(r, z))
 
-                        print(len(music))
-                        j = 0
-                        lines = []
-                        for i in music:
-                            if os.path.exists(i):
-                                try:
-                                    n = os.listdir(i)
-                                except Exception as err:
-                                    self.logger.error(err)
-                                    n = []
-                                p[:] = []
-                                for k in n:
-                                    file_ext = k.rsplit('.', 1)[-1]
-                                    if file_ext.lower() in self.ui.video_type_arr:
-                                        p.append(os.path.join(i, k))
-                                        path = os.path.join(i, k)
-                                        if os.path.isfile(path):
-                                            m_files.append(path)
-                                if p:
-                                    r = i
-                                    lines.append(r)
-                                    j = j+1
-        return list(set(m_files))
+                            for i in music:
+                                if os.path.exists(i):
+                                    try:
+                                        n = os.listdir(i)
+                                        for k in n:
+                                            file_ext = k.rsplit('.', 1)[-1]
+                                            if file_ext.lower() in self.ui.video_type_arr:
+                                                path = os.path.join(i, k)
+                                                if os.path.isfile(path):
+                                                    m_files.append(path)
+                                    except (PermissionError, OSError) as err:
+                                        self.logger.error('Error accessing directory {}: {}'.format(i, err))
+                                        continue
+                        except (PermissionError, OSError) as err:
+                            self.logger.error('Error walking directory {}: {}'.format(dirn, err))
+                            continue
+        return list(set(m_files))  # Remove any duplicates
 
     def get_music_db(self, music_db, queryType, queryVal):
         conn = sqlite3.connect(music_db)
@@ -543,7 +537,6 @@ class MediaDatabase():
             else:
                 #cur.execute('SELECT Artist, Title, Path FROM Music Where Album="'+qVal+'"')
                 qr = 'SELECT Artist, Title, Path FROM Music Where Album=?'
-                #print(qr, qVal)
                 cur.execute(qr, (qVal, ))
         elif q == "Title":
             if not qVal:

@@ -25,6 +25,7 @@ import subprocess
 from PyQt5 import QtCore
 from player_functions import send_notification, ccurl
 from vinanti import Vinanti
+import yt_dlp
 
 class YTDL:
     
@@ -55,7 +56,7 @@ class YTDL:
                     youtube_dl = ytdl_path
                 else:
                     if ytdl_path.endswith('yt-dlp') or ytdl_path.endswith('yt-dlp.exe'):
-                        send_notification('Please Wait! Getting Latest youtube-dl')
+                        send_notification('Please Wait! Getting Latest yt-dlp')
                         youtube_dl = ytdl_path
                         if ytdl_path.endswith('yt-dlp'):
                             ccurl('https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp'+'#-o#'+ytdl_path)
@@ -68,7 +69,7 @@ class YTDL:
                             f.write(update_time)
                             f.close() 
                     else:
-                        send_notification('youtube-dl path does not exists!')
+                        send_notification('yt-dlp path does not exists!')
                         youtube_dl = 'yt-dlp'
         else:
             youtube_dl = 'yt-dlp'
@@ -133,7 +134,7 @@ class YTDL:
                         final_url = url
         except Exception as e:
             logger.error('--error in processing youtube url--{0}'.format(e))
-            txt = 'Please Update youtube-dl'
+            txt = 'Please Update yt-dlp'
             send_notification(txt)
             final_url = ''
             updated_already = False
@@ -149,13 +150,13 @@ class YTDL:
                     if (cur_time - old_time < 24*3600):
                         updated_already = True
                 if not updated_already:
-                    send_notification('Please Wait! Getting Latest youtube-dl')
-                    if ytdl_path.endswith('ytdl'):
+                    send_notification('Please Wait! Getting Latest yt-dlp')
+                    if ytdl_path.endswith('yt-dlp'):
                         ccurl('https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp'+'#-o#'+ytdl_path)
                         subprocess.Popen(['chmod', '+x', ytdl_path])
                     else:
                         ccurl('https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe'+'#-o#'+ytdl_path)
-                    send_notification('Updated youtube-dl, Now Try Playing Video Again!')
+                    send_notification('Updated yt-dlp, Now Try Playing Video Again!')
                     update_time = str(int(time.time()))
                     if os.path.exists(ytdl_stamp):
                         os.remove(ytdl_stamp)
@@ -164,7 +165,7 @@ class YTDL:
                         f.write(update_time)
                         f.close()
                 else:
-                    send_notification('youtube-dl is already newest version')
+                    send_notification('yt-dlp is already newest version')
             
         logger.debug('yt-link:>>{0}'.format(final_url))
         if mode == 'TITLE' and not final_url:

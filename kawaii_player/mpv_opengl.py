@@ -389,17 +389,19 @@ def mpv_cmd_direct(cmd):
     site = ui.get_parameters_value(st='site')['site']
     try:
         pls_pos = me.mpv.get_property("playlist-pos")
-        if (path and os.path.exists(path) 
-                and site.lower() in ["video", "music", "none", "myserver"]):
-            me.mpv.set_property("playlist-pos", pls_pos)
+        if path and path.strip():  # Ensure path is not empty or just whitespace
+            if os.path.exists(path) and site.lower() in ["video", "music", "none", "myserver"]:
+                me.mpv.set_property("playlist-pos", pls_pos)
+            else:
+                if aud:
+                    me.audio = aud
+                me.mpv.command("loadfile", path)
+                me.mpv.set_property('loop-playlist', 'no')
+                me.mpv.set_property('loop-file', 'no')
         else:
-            if aud:
-                me.audio = aud
-            me.mpv.command("loadfile", path)
-            me.mpv.set_property('loop-playlist', 'no')
-            me.mpv.set_property('loop-file', 'no')
+            logger.debug("Skipping loadfile command due to empty path")
     except Exception as err:
-        print(err)
+        logger.error("Error in mpv_cmd_direct: {}".format(err))
         
 def mpv_log(level, component, msg):
     print('[{}] {}: {}'.format(level, component, msg))
@@ -1023,94 +1025,26 @@ class MpvOpenglWidget(QOpenGLWidget):
                 title = title[1:]
             self.mpv.command("playlist-clear")
             url = url.replace('"', "")
-            self.mpv.command("loadfile", url)
-            self.ui.final_playing_url = url
-            self.set_window_title_and_epn(title=title)
-            self.playlist_backup = True
-
-    def gather_external_sub(self, row=None):
-        new_path = self.ui.final_playing_url.replace('"', '')
-        sub_arr = []
-        slang_list = self.mpv.get_property("slang")
-        if not slang_list:
-            slang_list = ["mr", "en", "fr", "es", "jp"]
-        if os.path.exists(new_path):
-            sub_name_bytes = bytes(new_path, 'utf-8')
-            h = hashlib.sha256(sub_name_bytes)
-            sub_name = h.hexdigest()
-            sub_path_vtt = os.path.join(self.ui.yt_sub_folder, sub_name+'.vtt')
-            sub_path_srt = os.path.join(self.ui.yt_sub_folder, sub_name+'.srt')
-            sub_path_ass = os.path.join(self.ui.yt_sub_folder, sub_name+'.ass')
-            if os.path.exists(sub_path_vtt):
-                sub_arr.append({"path":sub_path_vtt, "type":"vtt", lang: "default"})
-            if os.path.exists(sub_path_srt):
-                sub_arr.append({"path":sub_path_srt, "type":"srt", lang: "default"})
-            if os.path.exists(sub_path_ass):
-                sub_arr.append({"path":sub_path_ass, "type":"ass", lang: "default"})
-        if self.ui.cur_row < len(self.ui.epn_arr_list):
-            if row and row < len(self.ui.epn_arr_list):
-                ourl = self.ui.epn_arr_list[row]
+            if url and not url.isspace():
+                self.mpv.command("loadfile", url)
+                self.ui.final_playing_url = url
+                self.set_window_title_and_epn(title=title)
+                self.playlist_backup = True
             else:
-                ourl = self.ui.epn_arr_list[self.ui.cur_row]
-            if '\t' in ourl:
-                param = None
-                ourl = ourl.split('\t')[1]
-                ourl = ourl.replace('"', "")
-                if ourl.startswith("http"):
-                    u = urllib.parse.urlparse(ourl)
-                    if 'youtube.com' in u.netloc and 'watch' in u.path:
-                        for q in u.query.split('&'):
-                            if q.startswith('v='):
-                                param = q.rsplit('=')[-1]
-                                break
-                    if param:
-                        ext_fn = lambda x: [x+".vtt", x+".srt", x+".ass"]
-                        
-                        ext_list = list(itertools.chain.from_iterable(list(map(ext_fn, slang_list))))
-                        for ext in ext_list:
-                            lang, file_type = ext.split(".")
-                            sub_arr.append(
-                                {"path": os.path.join(self.ui.yt_sub_folder, param+"."+ext),
-                                "type": file_type, "lang": lang}
-                                )
-        return sub_arr, slang_list
-
-    def try_external_sub(self, sub_arr, slang_list):
-        for sub in sub_arr.copy():
-            path = sub.get("path")
-            sub_type = sub.get("type")
-            lang = sub.get("lang")
-            if os.path.exists(path):
-                logger.debug(path)
-                if lang in slang_list or lang == "default":
-                    opt = "select"
-                else:
-                    opt = "auto"
-                self.mpv.command("sub-add", path, opt, "External-Subtitle", lang)
-                    
-    def idle_observer(self, _name, value):
-        if value is True:
-            self.disable_screen_auto_turnoff(False)
-        site = self.ui.get_parameters_value(st='site')['site']
-        logger.debug("...{}={}, quit-now={} site={}".format(value, _name, gui.quit_now, site))
-        if (value is True and self.started
-                and gui.list2.count() > 1
-                and gui.quit_now is False
-                and site.lower() not in ["video", "music", "none", "myserver"]):
-            if site.lower() == "playlists":
-                self.ui.stale_playlist = True
-            if self.mpv.get_property("playlist-count") == 1 and self.ui.playlist_continue:
-                logger.debug("only single playlist..")
-                self.mpv.set_property('loop-playlist', 'no')
-                self.mpv.set_property('loop-file', 'no')
-                self.mpv.command('stop')
-                gui.cur_row = (gui.cur_row + 1) % gui.list2.count()
-                gui.list2.setCurrentRow(gui.cur_row)
-                item = gui.list2.item(gui.cur_row)
-                if item:
-                    gui.list2.itemDoubleClicked['QListWidgetItem*'].emit(item)
-            self.set_window_title_and_epn(row=gui.cur_row)
-            
+                logger.error("Empty URL passed to check_queued_item")
+        
+    def start_player_loop(self):
+        if self.ui.final_playing_url:
+            url = self.ui.final_playing_url
+            if url and not url.isspace():
+                self.mpv.command("loadfile", url)
+                if self.ui.gapless_playback and self.ui.gapless_network_stream:
+                    self.prefetch_url = self.ui.get_next_url()
+                    if self.prefetch_url and not self.prefetch_url.isspace():
+                        self.mpv.command("prefetch-file", self.prefetch_url)
+            else:
+                logger.error("Empty URL passed to start_player_loop")
+        
     def set_window_title_and_epn(self, title=None, row=None):
         if title is None:
             if isinstance(row, int) and row < self.ui.list2.count():
@@ -1728,6 +1662,32 @@ class MpvOpenglWidget(QOpenGLWidget):
                         self.ui.float_window.showNormal()
         if not self.pause_timer.isActive() and platform.system().lower() == "darwin":
             self.pause_timer.start(1000)
-                        
 
-    
+    def core_observer(self, _name, value):
+        logger.debug("{} {}".format(_name, value))
+        if value is True and not self.playing_queue:
+            self.check_queued_item()
+
+    def idle_observer(self, _name, value):
+        logger.debug("{} {}".format(_name, value))
+        if value is True and not self.playing_queue:
+            self.check_queued_item()
+
+    def eof_observer(self, _name, value):
+        logger.debug("{} {}".format("eof.. value", value, _name))
+        if value is True or value is None:
+            if value is True:
+                self.rem_properties(self.ui.final_playing_url, 0, 0)
+            if self.ui.queue_url_list:
+                self.check_queued_item()
+            elif not gui.queue_url_list and self.playlist_backup:
+                if gui.cur_row < gui.list2.count():
+                    gui.list2.setCurrentRow(gui.cur_row)
+                    item = gui.list2.item(gui.cur_row)
+                    if item:
+                        gui.list2.itemDoubleClicked['QListWidgetItem*'].emit(item)
+                self.playlist_backup = False
+        if (value in [None, True] and (self.ui.quit_really == "yes" or not self.ui.playlist_continue)):
+            self.stop_msg = "openglwidget"
+            self.mpv.command("stop")
+            self.ui.player_stop.clicked_emit()

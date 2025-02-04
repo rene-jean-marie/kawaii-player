@@ -410,7 +410,7 @@ Web Interface, contains a search text box which can be used to send text command
 
 * **About Subtitle Support:** It requires installation of ffmpeg on the server. ffmpeg is required for extracting and converting subtiles to WebVTT format which can be displayed in the browser. Server will first scan for subtitles in the video folder. If it does not find subtitle there then it will try to extract subtitle from the video itself if it's in mkv format. Subtitles support can be switched on by using command 'sub:on' or 'sub:reload'. Subtitles will be displayed as captions and won't be embedded into streaming video using transcoding, hence this method won't put strain on the server. In case of streaming mkv files, **Chromium** can play most of them well without subtitle; hence in such cases users can switch on subtitle support. **Firefox** does not support playing mkv files, hence switching on subtitle on it will be useful only for HTML5 compatible video formats. 
 
-* **About Youtube-Quick (ytq:) command:** (Available in version 2.8+) the ytq command will send any url or torrent link to the the application without asking anything and will start playing the video instantly using mpv/mplayer and youtube-dl. Torrent http/magnet links will be played using torrent streaming engine of the application. All the casted url's will be temporarily saved in 'TMP_PLAYLIST' - which users can save later on. Torrents will be saved in 'Torrent->History' section. Users can control quality using 'quality:' command.
+* **About Youtube-Quick (ytq:) command:** (Available in version 2.8+) the ytq command will send any url or torrent link to the the application without asking anything and will start playing the video instantly using mpv/mplayer and yt-dlp. Torrent http/magnet links will be played using torrent streaming engine of the application. All the casted url's will be temporarily saved in 'TMP_PLAYLIST' - which users can save later on. Torrents will be saved in 'Torrent->History' section. Users can control quality using 'quality:' command.
 
 
 
@@ -470,7 +470,7 @@ From v3.6 onwards, kawaii-player will contain a separate slave control box, so t
 
 #### Browser to PC Casting
 
-The computer running kawaii-player can be used as youtube-casting or torrent-casting device. Users can directly send youtube video/playlist links using web interface to the application with the help of text commands mentioned in the [Using Web Interface](#using-web-interface) section, which will be then played using mpv/mplayer and youtube-dl. If the computer running the application is connected to TV then user can directly view the content on TV. Same is with torrent http/magnet links. Users can preserve everything which has been played into local playlist. Users need to enable **remote-control** mode to use these features, without which everything you click might start playing in the browser if it's html5 compatible. The playing instance can be easily controlled using web-based remote.
+The computer running kawaii-player can be used as youtube-casting or torrent-casting device. Users can directly send youtube video/playlist links using web interface to the application with the help of text commands mentioned in the [Using Web Interface](#using-web-interface) section, which will be then played using mpv/mplayer and yt-dlp. If the computer running the application is connected to TV then user can directly view the content on TV. Same is with torrent http/magnet links. Users can preserve everything which has been played into local playlist. Users need to enable **remote-control** mode to use these features, without which everything you click might start playing in the browser if it's html5 compatible. The playing instance can be easily controlled using web-based remote.
 
 Explanation for some casting commands:
 
@@ -508,11 +508,11 @@ For using remote control, see the following section.
 
 ![kawaii-player](/Images/yt.jpg)
 
-This player provides a wrapper around youtube site using qtwebengine. If your GNU/linux distro does not package qtwebengine, then it will fallback to qtwebkit, which is slower compared to qtwebengine for rendering web pages. Users need to install youtube-dl for directly playing youtube videos on this player. In this wrapper users will get complete functionality of youtube site, but with better control over video and playlist. Users can add any youtube video url into the local playlist or they can import entire youtube playlist as local playlist. It also supports offline mode, if users have fluctuating internet connection. Before using offline mode users need to add youtube url into local playlist.
+This player provides a wrapper around youtube site using qtwebengine. If your GNU/linux distro does not package qtwebengine, then it will fallback to qtwebkit, which is slower compared to qtwebengine for rendering web pages. Users need to install yt-dlp for directly playing youtube videos on this player. In this wrapper users will get complete functionality of youtube site, but with better control over video and playlist. Users can add any youtube video url into the local playlist or they can import entire youtube playlist as local playlist. It also supports offline mode, if users have fluctuating internet connection. Before using offline mode users need to add youtube url into local playlist.
 
-youtube-dl gets outdated quickly, hence there is an option provided in the player to fetch it's current version automatically if it fails to play videos. In order to use this feature user needs to add *'YTDL_PATH=automatic'* in *'other_options.txt'* file.
+yt-dlp gets outdated quickly, hence there is an option provided in the player to fetch it's current version automatically if it fails to play videos. In order to use this feature user needs to add *'YTDL_PATH=automatic'* in *'other_options.txt'* file.
 
-Even though, the wrapper has been written for YouTube site, the framework that has been created can be used with any youtube-dl supported site from version 2.8+ onwards. Using internal web browser, users can go to any youtube-dl supported website (using either duckduckgo or google), then right click the required link and play it with kawaii-player.
+Even though, the wrapper has been written for YouTube site, the framework that has been created can be used with any yt-dlp supported site from version 2.8+ onwards. Using internal web browser, users can go to any yt-dlp supported website (using either duckduckgo or google), then right click the required link and play it with kawaii-player.
 
 ## Minimal Music Player
 
@@ -648,7 +648,7 @@ Make sure to install `mpv` or `libmpv-dev` before starting the installation proc
 		
 		(first install python3, python3-setuptools)
         
-		$ git clone https://github.com/kanishka-linux/kawaii-player 
+		$ git clone https://github.com/kanishka-linux/kawaii-player
         
         (or directly fetch tar.bz2 or .zip from stable release section and extract it)
         
@@ -683,7 +683,7 @@ Make sure to install `mpv` or `libmpv-dev` before starting the installation proc
     
     **Directly using self contained binary:** 
     
-    kawaii-player from v2.5+ onwards is being released with experimental binary for 64-bit windows 10. This binary packs all the python based dependencies (except python3-libtorrent) along with mpv and curl. Just grab the binary for windows from release section, extract it, go to extracted folder and then click on **kawaii_player** file to launch the application. In **~\.config\kawaii-player\other_options.txt** file, windows users have to change 'Preferences->Other->Get Library' to 'curl' from pycurl, if it is not already curl. Users can also change 'YTDL_PATH=DEFAULT' to 'YTDL_PATH=AUTOMATIC', that will grab updated youtube-dl automatically, for playing youtube videos. On windows youtube-dl requires 'msvc 2010 redistributable package (x86)' - which they have to install from microsoft's website.
+    kawaii-player from v2.5+ onwards is being released with experimental binary for 64-bit windows 10. This binary packs all the python based dependencies (except python3-libtorrent) along with mpv and curl. Just grab the binary for windows from release section, extract it, go to extracted folder and then click on **kawaii_player** file to launch the application. In **~\.config\kawaii-player\other_options.txt** file, windows users have to change 'Preferences->Other->Get Library' to 'curl' from pycurl, if it is not already curl. Users can also change 'YTDL_PATH=DEFAULT' to 'YTDL_PATH=AUTOMATIC', that will grab updated yt-dlp automatically, for playing youtube videos. On windows yt-dlp requires 'msvc 2010 redistributable package (x86)' - which they have to install from microsoft's website.
 
 6. Tips for macOs users (Installing dependencies).
 
@@ -739,7 +739,7 @@ Make sure to install `mpv` or `libmpv-dev` before starting the installation proc
 
 - python3-libtorrent {in case python3 bindings for libtorrent are not included in libtorrent-rasterbar}
 
-- youtube-dl {for YouTube Support}
+- yt-dlp {for YouTube Support}
 
 - python3-dbus {for MPRIS DBus support}
 
@@ -761,11 +761,11 @@ Make sure to install `mpv` or `libmpv-dev` before starting the installation proc
 
 **Dependencies installation in Arch**
 
-sudo pacman -S python python-pyqt5 qt5-webengine python-dbus python-pycurl python-pillow python-beautifulsoup4 python-lxml curl libnotify mpv mplayer ffmpegthumbnailer sqlite3 libtorrent-rasterbar youtube-dl wget python-mutagen socat
+sudo pacman -S python python-pyqt5 qt5-webengine python-dbus python-pycurl python-pillow python-beautifulsoup4 python-lxml curl libnotify mpv mplayer ffmpegthumbnailer sqlite3 libtorrent-rasterbar yt-dlp wget python-mutagen socat
 
 **Dependencies installation in Ubuntu 16.04+**
 
-sudo apt install python3 python3-pyqt5 python3-pycurl python3-pil python3-bs4 python3-lxml python3-taglib curl wget libnotify-bin mpv mplayer ffmpegthumbnailer sqlite3 python3-libtorrent youtube-dl python3-dbus.mainloop.pyqt5 python3-pyqt5.qtwebkit python3-dbus python3-mutagen
+sudo apt install python3 python3-pyqt5 python3-pycurl python3-pil python3-bs4 python3-lxml python3-taglib curl wget libnotify-bin mpv mplayer ffmpegthumbnailer sqlite3 python3-libtorrent yt-dlp python3-dbus.mainloop.pyqt5 python3-pyqt5.qtwebkit python3-dbus python3-mutagen
 
 **Dependencies installation in Fedora 25+**
 

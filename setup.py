@@ -17,7 +17,6 @@ You should have received a copy of the GNU General Public License
 along with kawaii-player.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-
 import os
 import shutil
 import platform
@@ -32,10 +31,18 @@ system = platform.system().lower()
  package manager
 """
 
-install_requires = []
+base_requires = [
+    "aiohttp>=3.8.0",
+    "requests>=2.25.0",
+]
+
+if system == "linux":
+    base_requires.append("dbus-python>=1.2.0")
+
+install_requires = base_requires.copy()
 if system in ["darwin", "nt"]:
-    install_requires = [
-        "PyQt5",
+    install_requires.extend([
+        "PyQt5>=5.15.0",
         "pycurl",
         "bs4",
         "Pillow",
@@ -46,7 +53,7 @@ if system in ["darwin", "nt"]:
         "PyQtWebEngine",
         "PyOpenGL",
         "python-vlc"
-    ]
+    ])
 
 library_path = None
 if system == "darwin":
@@ -73,16 +80,36 @@ setup(
     url='https://github.com/kanishka-linux/kawaii-player',
     long_description="README.md",
     packages=[
-        'kawaii_player', 'kawaii_player.Plugins', 'kawaii_player.widgets',
-        'kawaii_player.hls_webengine', 'kawaii_player.hls_webkit',
-        'kawaii_player.vinanti', 'kawaii_player.tvdb_async',
-        ],
+        'kawaii_player',
+        'kawaii_player.Plugins',
+        'kawaii_player.widgets',
+    ],
     include_package_data=True,
-    install_requires = install_requires,
-    ext_modules = cythonize(extensions, force=True),
+    install_requires=install_requires,
+    ext_modules=cythonize(extensions, force=True),
     entry_points={
-        'gui_scripts':['kawaii-player = kawaii_player.kawaii_player:main'], 
-        'console_scripts':['kawaii-player-console = kawaii_player.kawaii_player:main']
-        }, 
-    description="A Audio/Video manager, multimedia player and portable media server",
+        'gui_scripts': [
+            'kawaii-player = kawaii_player.app:main',
+            'kawaii-player-legacy = kawaii_player.kawaii_player:main'
+        ],
+        'console_scripts': [
+            'kawaii-player-console = kawaii_player.app:main',
+            'kawaii-player-console-legacy = kawaii_player.kawaii_player:main'
+        ]
+    },
+    description="A modern Audio/Video manager and multimedia player with unified components",
+    python_requires='>=3.7',
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Intended Audience :: End Users/Desktop',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Topic :: Multimedia :: Video :: Display',
+        'Topic :: Multimedia :: Sound/Audio :: Players',
+    ],
 )

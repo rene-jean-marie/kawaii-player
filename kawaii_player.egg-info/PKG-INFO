@@ -1,0 +1,11 @@
+Metadata-Version: 2.1
+Name: kawaii-player
+Version: 6.0.0
+Summary: A Audio/Video manager, multimedia player and portable media server
+Home-page: https://github.com/kanishka-linux/kawaii-player
+Author: kanishka-linux
+Author-email: kanishka.linux@gmail.com
+License: GPLv3
+License-File: LICENSE
+
+README.md

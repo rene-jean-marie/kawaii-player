@@ -1,0 +1,12 @@
+aiohttp>=3.8.0
+requests>=2.25.0
+dbus-python>=1.2.0; platform_system != "Windows"  # Optional, not available on Windows
+PyQt5>=5.15.0
+python-mpv>=0.5.2
+yt-dlp>=2023.3.4
+pillow>=9.0.0
+mutagen>=1.45.1
+pycurl>=7.45.1
+beautifulsoup4>=4.9.3
+lxml>=4.9.0
+pytaglib>=1.4.6
